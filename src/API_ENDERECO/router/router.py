@@ -1,10 +1,17 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
 from src.API_ENDERECO.service.service import Service
 
 API = APIRouter()
 
-@API.get('/')
+@API.get('/_Consulta',
+         description='Retorna a localização do CEP informado e armazena a pesquisa no banco de dados.')
 async def insertion_cep(cep):
-    find = Service.get_and_logs(cep)
-    return find
+    try:
+        find = Service.get_and_logs(cep)
+        return find
+    except KeyError:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail='Verifique novamente o CEP informado. (Apenas são aceitos CEP brasileiros).')
+
+
 
